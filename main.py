@@ -9,6 +9,5 @@ if __name__ == "main":
 	while True:
 		for i in range(0, 13):
 			data[i] = hexlify(i2c.readfrom_mem(slave_address[0], i, number_of_bytes)) #read the values of all the available registers and store them
-		print(str(data))
 		utime.sleep(5)
 		
