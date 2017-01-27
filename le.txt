@@ -1,0 +1,31 @@
+Machine Learning - CALTECH 
+1. What is learning
+2. Can we learn
+3. how to do it 
+4. how to do it well 
+5. take home lessons
+logical dependency that goes through the case - third lecture doesnt really belong here 
+Example of machine learning
+Components of learning
+a simple model
+types of learning
+puzzle
+
+example: how a viewer rates a movie?
+netflix wanted to improve the inhouse system by a mere 10% = 1 million dollar prize.
+the essence of machine learning: 
+1) a pattern exists - if a pattern doesn't exist there would be nothing to find. The way a person rates a movie is related to how they rate other movies and is also related to how other people rated that movie. (a pattern exists but we can not pin it down mathematically is the reason why we are going for machine learning - depend on the data to be able to find the system)
+2) we can not pin it down mathematically - this is why we resort to machine learning (otherwise no use of machine learning)
+3) we have data that represents that pattern
+
+if you dont have a pattern, you can try learning but you will fail - when you develop the theory of learning you should be able to apply the technique regardless of whether there is a pattern or not and you are going to determine whether there is a pattern or not, can do if a pattern does not exist
+
+can not do without data. 
+
+supervised learning/unsupervised learning
+
+a) supervised learning 
+i) unknown target function y = f(x), you don't have to worry about what pattern you are trying to learn
+b) the target function is known for the training data
+
+probabilistic situation 
