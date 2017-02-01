@@ -1,6 +1,5 @@
 from machine import Pin, I2C
 import utime
-import ubinascii
 import ustruct as struct
 
 def construct(data_1, data_2):
