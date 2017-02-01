@@ -1,6 +1,5 @@
 from machine import Pin, I2C
 import utime
-<<<<<<< HEAD
 import ubinascii
 import ustruct as struct
 
