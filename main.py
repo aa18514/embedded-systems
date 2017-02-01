@@ -26,16 +26,3 @@ if __name__ == "main":
 			data[i] = i2c.readfrom_mem(slave_address[0], i, number_of_bytes) #second byte is the register address, third byte is the number of bytes read
 		write_data(x = construct(data[3], data[4]), y = construct(data[5], data[6]), z = construct(data[7], data[8]))
 		utime.sleep(1)
-=======
-import ubinascii import hexlify
-
-if __name__ == "main":
-	i2c = I2C(scl = Pin(5), sda = Pin(4), freq = 500000)
-	slave_address = i2c.scan(); 
-	number_of_bytes = 4; 
-	while True:
-		for i in range(0, 13):
-			data[i] = hexlify(i2c.readfrom_mem(slave_address[0], i, number_of_bytes)) #read the values of all the available registers and store them
-		utime.sleep(5)
-		
->>>>>>> 1337d7d4ef9d4a6df66a4db113a394d2a12eb635
