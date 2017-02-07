@@ -2,6 +2,9 @@ from machine import Pin, I2C
 import utime
 import ustruct as struct
 
+from umqtt.simple import MQTTClient
+
+
 def construct(data_1, data_2):
 	return bytearray(data_1 + data_2)
 
@@ -14,6 +17,9 @@ def write(data, label):
 	print(label + "{}\n".format(struct.unpack('>h', data)[0]))
 
 if __name__ == "main":
+	client = MQTTClient(machine.unique_id(),"192.168.0.10")
+	client.connect()
+	client.publish("asad",bytes(data,'utf-8'))
 	i2c = I2C(scl = Pin(5), sda = Pin(4), freq = 500000)
 	slave_address = i2c.scan() 
 	number_of_bytes = 1 
