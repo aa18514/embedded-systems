@@ -1,4 +1,3 @@
-import network
 import machine
 from umqtt.simple import MQTTClient
 
