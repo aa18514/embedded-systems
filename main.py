@@ -13,7 +13,7 @@ class i2c():
 		"""8-average, 15 default, positive self - test measurement
 		Gain = 5, Continious measurement mode"""
 		self.__ic.writeto_mem(self.__slave_address[0], 0, b"\x71")
-		self.__ic.writeto_mem(self.__slave_address[0], 1, b"\xA0")
+		self.__ic.writeto_mem(self.__slave_address[0], 1, b"\xC0")
 		self.__ic.writeto_mem(self.__slave_address[0], 2, b"\x00")
 		utime.sleep_ms(6)
 
@@ -41,7 +41,7 @@ class i2c():
 			print(self.__y)
 			print(self.__z)
 			self.update_magnitude()
-			utime.sleep(1)
+			utime.sleep_ms(67)
 
 if __name__ == "main":
 	"""get data from sensor and prepare 
