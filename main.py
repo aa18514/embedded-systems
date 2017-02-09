@@ -9,40 +9,32 @@ class i2c():
 		self.__ic =  I2C(scl = Pin(Pin1), sda = Pin(Pin2), freq = frequency)
 		self.__slave_address = self.__ic.scan()
 
-	def construct(self, data_1, data_2):
-		"""concatanate MSB and LSB"""
-		print(data_1)
-		print(data_2)
-		print(data_1 + data_2)
-		return bytearray(data_1 + data_2)
-
-	def write_data(self, x, y, z):
-		return self.prepare_message(x, "x-coordinate: ") + self.prepare_message(y, "z-coordinate: ") + self.prepare_message(z, "y-coordinate: ")
-		return message
-
-	def prepare_message(self, data, label):
-		"""interpret data as an 
-		signed integer"""
-		message = label + "{}\n".format(struct.unpack('>h', data)[0])
-		print(message)
-		return message 
-
 	def enable_test_mode(self): 
 		self.__ic.writeto_mem(self.__slave_address[0], 2, b"\x00")
 	
+	def update_x(self, x_msb, x_lsb):
+		self.__x = struct.unpack('>h', x_msb + x_lsb)[0]
+
+	def update_z(self, z_msb, z_lsb):
+		self.__z = struct.unpack('>h', z_msb + z_lsb)[0]
+	
+	def update_y(self, y_msb, y_lsb):
+		self.__y = struct.unpack('>h', y_msb + y_lsb)[0]
+	
+	def update_magnitude(self): 
+		self.__magnitude = (self.__x**2 + self.__y**2 + self.__z**2)**0.5
+
 	def start_recieving_data(self): 
 		data = [0]*13
 		while True:	#should change this later 
 			for i in range(0, 13):
 				data[i] = self.__ic.readfrom_mem(self.__slave_address[0], i, 1) #second byte is the register address, third byte is the number of bytes read
-			x_msb = data[3] 
-			x_lsb = data[4] 
-			z_msb = data[5] 
-			z_lsb = data[6]
-			y_msb = data[7] 
-			y_lsb = data[8] 
-			message = self.write_data(self.construct(x_msb, x_lsb), self.construct(z_msb, z_lsb), self.construct(y_msb, y_lsb))
-			print(json.dumps(message))
+			self.update_x(data[3], data[4])
+			self.update_z(data[5], data[6])
+			self.update_y(data[7], data[8])
+			self.update_magnitude()
+			message = self.__magnitude
+			print(message)
 			utime.sleep(1)
 
 if __name__ == "main":
