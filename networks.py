@@ -16,8 +16,9 @@ def init_wlan_and_client(ip_address, id):
 	client = MQTTClient(id,ip_address)
 	return client
 
-def publish(message):
+def publish(client, message):
 	payload = json.dumps(message)
+	print(payload)
 	client.publish(host_address, bytes(message, 'utf-8'))
 def connect_client(client, host_address, message):
 	client.publish(host_address ,bytes(message,'utf-8'))
@@ -25,4 +26,4 @@ def connect_client(client, host_address, message):
 def connect():
 	client = init_wlan_and_client('192.168.0.10','asdid')
 	client.connect()
-	publish_data(client, "esys/asd", bytes('helloooo'), 'utf-8')
+	return client
