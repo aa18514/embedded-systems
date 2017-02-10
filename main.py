@@ -8,9 +8,12 @@ class i2c():
 	def __init__(self, Pin1, Pin2, frequency): 
 		self.__ic =  I2C(scl = Pin(Pin1), sda = Pin(Pin2), freq = frequency)
 		self.__slave_address = self.__ic.scan()
-
-	def continious_measurement_mode(self): 
-		self.__ic.writeto_mem(self.__slave_address[0], 2, b"\x00")
+	
+	def set_mode(self, num):
+		self.__mode = bytes(num) 
+	
+	def write_mode(self): 
+		self.__ic.writeto_mem(self.__slave_address[0], 2, self.__mode)
 	
 	def set_gain(self):
 		cmd = bytes(self.__gain << 5)
@@ -61,6 +64,7 @@ if __name__ == "main":
 	packet for transmission and publish it"""
 	IC = i2c(5, 4, 50000)  
 	IC.update_gain(5)
+	IC.set_mode(0) 
 	IC.enable_test_mode()
 	IC.start_recieving_data()
-
+	
