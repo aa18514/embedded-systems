@@ -9,14 +9,27 @@ class i2c():
 		self.__ic =  I2C(scl = Pin(Pin1), sda = Pin(Pin2), freq = frequency)
 		self.__slave_address = self.__ic.scan()
 
+	def continious_measurement_mode(self): 
+		self.__ic.writeto_mem(self.__slave_address[0], 2, b"\x00")
+	
+	def set_gain(self):
+		cmd = bytes(self.__gain << 5)
+		self.__ic.writeto_mem(self.__slave_address[0], 1, cmd)
+	
+	def positive_self_test_measurement(self): 
+		self.__ic.writeto_mem(self.__slave_address[0], 0, b"\x71")
+	
 	def enable_test_mode(self): 
 		"""8-average, 15 default, positive self - test measurement
 		Gain = 5, Continious measurement mode"""
-		self.__ic.writeto_mem(self.__slave_address[0], 0, b"\x71")
-		self.__ic.writeto_mem(self.__slave_address[0], 1, b"\xC0")
-		self.__ic.writeto_mem(self.__slave_address[0], 2, b"\x00")
+		self.positive_self_test_measurement() 
+		self.set_gain()
+		self.continious_measurement_mode()
 		utime.sleep_ms(6)
-
+		
+	def update_gain(self, num):
+		self.__gain = num
+	
 	def update_x(self, data):
 		self.__x = struct.unpack('>h', data)[0]
 
@@ -47,6 +60,7 @@ if __name__ == "main":
 	"""get data from sensor and prepare 
 	packet for transmission and publish it"""
 	IC = i2c(5, 4, 50000)  
+	IC.update_gain(5)
 	IC.enable_test_mode()
 	IC.start_recieving_data()
 
