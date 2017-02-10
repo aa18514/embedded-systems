@@ -44,7 +44,10 @@ class i2c():
 		utime.sleep_ms(6)
 		
 	def update_gain(self, num):
-		self.__gain = num
+		"""defining boundaries for x, y and z coordinates respectively"""
+		self.__upper_limit = 575 * ((930 - num*100)/390)
+		self.__lower_limit = 243 * ((930 - num*100)/390)
+		self.__gain = bytes(num)
 	
 	def update_x(self, data):
 		self.__x = struct.unpack('>h', data)[0]
