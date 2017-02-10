@@ -76,8 +76,8 @@ if __name__ == "main":
 	"""get data from sensor and prepare 
 	packet for transmission and publish it""" 
 	IC = i2c(5, 4, 50000)  
-	IC.update_gain(IC.read_continious_measurement_mode())
-	IC.set_mode(0) 
+	IC.update_gain(5)
+	IC.set_mode(IC.read_continious_measurement_mode()) 
 	IC.enable_test_mode()
 	IC.start_recieving_data()
 	
