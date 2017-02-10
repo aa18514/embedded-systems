@@ -1,3 +1,5 @@
+"""read time from the broker exactly once and then continiously update it"""
+
 from machine import Pin, I2C, RTC
 import utime
 import ustruct as struct
