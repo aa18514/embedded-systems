@@ -48,8 +48,8 @@ class i2c():
 		
 	def update_gain(self, num):
 		"""defining boundaries for x, y and z coordinates respectively"""
-		self.__upper_limit = 575 * ((930 - num*100)/390)
-		self.__lower_limit = 243 * ((930 - num*100)/390)
+		self.__upper_limit = 1.474 * (930 - num*100)
+		self.__lower_limit = 0.623 * (930 - num*100)
 		self.__gain = bytes(num)
 	
 	def update_x(self, data):
