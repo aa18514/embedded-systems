@@ -22,6 +22,7 @@ class i2c():
 		return self.__single_measurement_mode 
 	
 	def read_idle_mode(): 
+		"""can be self.__idle_mode2 as well"""
 		retrun self.__idle_mode1
 	
 	def set_mode(self, num):
