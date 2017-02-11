@@ -1,10 +1,9 @@
-"""read time from the broker exactly once and then continiously update it"""
-
 from machine import Pin, I2C, RTC
 import utime
 import ustruct as struct
-import network
+from netwoker import network 
 import json
+from clock import Clock  
 
 class i2c():
 	def __init__(self, Pin1, Pin2, frequency):
@@ -29,11 +28,11 @@ class i2c():
 		self.__mode = bytes(num)
 
 	def write_mode(self, regAddress):
-		self.__ic.writeto_mem(self.__slave_address[0], regAddress, self.__mode)
+		self.__ic.writeto_mem(self.__slave_address[0], regAddress, b"\x00")
 
 	def set_gain(self):
-		cmd = bytes(self.__gain << 5)
-		self.__ic.writeto_mem(self.__slave_address[0], 1, cmd)
+		cmd = self.__gain
+		self.__ic.writeto_mem(self.__slave_address[0], 1, self.__gain)
 
 	def positive_self_test_measurement(self):
 		self.__ic.writeto_mem(self.__slave_address[0], 0, b"\x71")
@@ -50,7 +49,7 @@ class i2c():
 		"""defining boundaries for x, y and z coordinates respectively"""
 		self.__upper_limit = 1.474 * (930 - num*100)
 		self.__lower_limit = 0.623 * (930 - num*100)
-		self.__gain = bytes([num])
+		self.__gain = bytes([num << 5])
 
 	def update_x(self, data):
 		self.__x = struct.unpack('>h', data)[0]
@@ -64,29 +63,37 @@ class i2c():
 	def update_magnitude(self):
 		self.__magnitude = (self.__x**2 + self.__y**2 + self.__z**2)**0.5
 
-	def start_recieving_data(self):
+	def start_recieving_data(self, net):
 		while True:	#should change this later
+			networker.publish(client, "")
 			data = [0]*6
 			data = self.__ic.readfrom_mem(self.__slave_address[0], 3, 6)
 			self.update_x(data[0:2])
 			self.update_z(data[2:4])
 			self.update_y(data[4:6])
 			self.update_magnitude()
-			print(self.__x)
-			print(self.__y)
-			print(self.__z)
-			self.update_magnitude()
+			#print(self.__x)
+			#print(self.__y)
+			#print(self.__z)
+			#print("lower limit: " + str(self.__lower_limit))
+			#print("upper limits: " + str(self.__upper_limit))
+			net.publish(self.__x)
 			utime.sleep_ms(67)
 
 if __name__ == "main":
 	"""get data from sensor and prepare
 	packet for transmission and publish it"""
 	IC = i2c(5, 4, 50000)
-	IC.update_gain(5)
+	net = Network('192.168.0.10', 'asdid')
+	net.init_wlan_and_client()
+	net.recieve_message() #recieve message from broker which contains the time 
+	clk = Clock(net.retrieve_message())
+	IC.update_gain(2)
 	mode = IC.read_continious_measurement_mode()
+	client = networker.connect()
 	if(mode < 0 or mode > 4):
 		print("invalid mode, please try again")
 	else:
 		IC.set_mode(mode)
 		IC.enable_test_mode()
-		IC.start_recieving_data()
+		IC.start_recieving_data(net)
