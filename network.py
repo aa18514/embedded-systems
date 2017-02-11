@@ -9,6 +9,7 @@ class Network():
 		self.__network_id = id
 
 	def sub_cb(self, topic, msg):
+		print(msg)
 		self.__msg = msg 
 
 	def retrieve_message(self): 
@@ -26,18 +27,13 @@ class Network():
 		while not sta_if.isconnected(): #block until the we are connected to the internet
 			pass
 		self.__client = MQTTClient(self.__network_id, self.__ip_address)
+		self.__client.connect()
 
 	def publish(self, message):
-		self.__client.publish('esys/asd/', bytes(message, 'utf-8'))
+		self.__client.publish('esys/asd/', bytes("AALOO", 'utf-8'))
 
-	def recieve_message(self): 
-		self.__client.set_callback(self.sub_cb)
-		self.__clinet_connect() 
-		self.__client.subscribe(b"esys/time")
-		Huzzah = True
-		while Huzzah is True: 
-			if True: 
-				self.__client.wait_msg() 
-			else: 
-				Huzzah = False
-				self.__client.check_msg() 
+	def recieve_message(self, topic): 
+		self.__client.set_callback(self.sub_cb) 
+		self.__client.subscribe(topic)
+		self.__client.wait_msg() 
+		self.__client.check_msg()
