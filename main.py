@@ -65,7 +65,6 @@ class i2c():
 
 	def start_recieving_data(self, net):
 		while True:	#should change this later
-			networker.publish(client, "")
 			data = [0]*6
 			data = self.__ic.readfrom_mem(self.__slave_address[0], 3, 6)
 			self.update_x(data[0:2])
