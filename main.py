@@ -1,7 +1,7 @@
 from machine import Pin, I2C, RTC
 import utime
 import ustruct as struct
-from netwoker import network 
+from networker import *
 import json
 from clock import Clock  
 
@@ -13,6 +13,7 @@ class i2c():
 		self.__single_measurement_mode = 1
 		self.__idle_mode1 = 2
 		self.__idle_mode2 = 3
+		self.__data = [0]*6
 
 	def read_continious_measurement_mode(self):
 		return self.__continious_measurement_mode
@@ -65,11 +66,10 @@ class i2c():
 
 	def start_recieving_data(self, net):
 		while True:	#should change this later
-			data = [0]*6
-			data = self.__ic.readfrom_mem(self.__slave_address[0], 3, 6)
-			self.update_x(data[0:2])
-			self.update_z(data[2:4])
-			self.update_y(data[4:6])
+			self.__data = self.__ic.readfrom_mem(self.__slave_address[0], 3, 6)
+			self.update_x(self.__data[0:2])
+			self.update_z(self.__data[2:4])
+			self.update_y(self.__data[4:6])
 			self.update_magnitude()
 			#print(self.__x)
 			#print(self.__y)
@@ -85,11 +85,10 @@ if __name__ == "main":
 	IC = i2c(5, 4, 50000)
 	net = Network('192.168.0.10', 'asdid')
 	net.init_wlan_and_client()
-	net.recieve_message() #recieve message from broker which contains the time 
+	net.recieve_message(b"esys/time") #recieve message from broker which contains the time
 	clk = Clock(net.retrieve_message())
 	IC.update_gain(2)
 	mode = IC.read_continious_measurement_mode()
-	client = networker.connect()
 	if(mode < 0 or mode > 4):
 		print("invalid mode, please try again")
 	else:
