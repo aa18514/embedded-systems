@@ -8,10 +8,8 @@ class Network():
 		self.__ip_address = ip_address
 		self.__network_id = id
 
-	def sub_cb(self, topic, msg):
-		print(msg)
+	def sub_cb(self, topic, msg): 
 		self.__msg = msg 
-
 	def retrieve_message(self): 
 		return self.__msg
 

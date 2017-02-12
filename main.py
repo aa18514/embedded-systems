@@ -1,7 +1,7 @@
 from machine import Pin, I2C, RTC
 import utime
 import ustruct as struct
-from networker import *
+from mqtt import *
 import json
 from clock import Clock  
 
@@ -82,16 +82,22 @@ class i2c():
 if __name__ == "main":
 	"""get data from sensor and prepare
 	packet for transmission and publish it"""
+	test = ""
 	IC = i2c(5, 4, 50000)
 	net = Network('192.168.0.10', 'asdid')
 	net.init_wlan_and_client()
 	net.recieve_message(b"esys/time") #recieve message from broker which contains the time
 	clk = Clock(net.retrieve_message())
 	IC.update_gain(2)
-	mode = IC.read_continious_measurement_mode()
-	if(mode < 0 or mode > 4):
-		print("invalid mode, please try again")
-	else:
-		IC.set_mode(mode)
-		IC.enable_test_mode()
-		IC.start_recieving_data(net)
+	net.recieve_message(b"esys/asd/")
+	cmd = str(net.retrieve_message())
+	print(cmd)
+	if cmd == "P":
+		mode = IC.read_continious_measurement_mode()
+		if(mode < 0 or mode > 4):
+			print("invalid mode, please try again")
+		else:
+			IC.set_mode(mode)
+			IC.enable_test_mode()
+			IC.start_recieving_data(net)
+
