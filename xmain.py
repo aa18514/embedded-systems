@@ -19,10 +19,10 @@ class i2c():
 		self.__ic.writeto_mem(self.__slave_address, 0, b"\x70")
 
 	def set_gain(self):
-		self.__ic.writeto_mem(self.__slave_address, 1, self.__gain)
+		self.__ic.writeto_mem(self.__slave_address, 1, b"\x20")
 	
 	def write_mode(self):
-		self.__ic.writeto_mem(self.__slave_address, 2, self.__mode)
+		self.__ic.writeto_mem(self.__slave_address, 2, b"\x00")
 
 	def enable_test_mode(self):
 		"""8-average, 15 default, 
@@ -55,35 +55,24 @@ class i2c():
 		self.__y = struct.unpack('>h', data)[0]
 
 
-	def start_recieving_data(self, net, y):
+	def start_recieving_data(self):
 		while True:	#should change this later
 			self.__data = self.__ic.readfrom_mem(self.__slave_address, 3, 6) 
 			self.update_x(self.__data[0:2])
 			self.update_y(self.__data[2:4])
 			self.update_z(self.__data[4:6])
 			m = (self.__x**2 + self.__y**2 + self.__z**2)**0.5
+			print(str(self.__x) + " " + str(self.__y) + " " + str(self.__z))
+			print("magnitude: " + str(m))
 			if(self.__magnitude is not 0):
-				for i in range(0, len(y) - 1):
-					if(abs(m - self.__magnitude) > 100): 
-						msg = "device connected: " + y[i][2] 
-						net.publish(json.dumps(msg))
-						break
+				if(abs(m - self.__magnitude) > 100): 
+					msg = "device connected: "
+					print(msg)
 			self.__magnitude = m 
-			utime.sleep_ms(5000)
-
-if __name__ == "main":
-	"""get data from sensor and prepare
-	packet for transmission and publish it"""
-	txt = open("device.txt", "r")
-	y = txt.read().split("\r\n")
-	for i in range(0, len(y)):
-		y[i] = y[i].split(" ")
-	IC = i2c(5, 4, 50000)
-	net = Network('192.168.0.10', 'asdid')
-	net.init_wlan_and_client()
-	#net.recieve_message(b"esys/time") #recieve message from broker which contains the time
-	#clk = Clock(net.retrieve_message())
-	IC.update_gain(2)
-	IC.set_mode(0)
-	IC.enable_test_mode()
-	IC.start_recieving_data(net, y)
+			utime.sleep_ms(2000)
+	
+IC = i2c(5, 4, 50000)
+IC.update_gain(2)
+IC.set_mode(0)
+IC.enable_test_mode()
+IC.start_recieving_data()
