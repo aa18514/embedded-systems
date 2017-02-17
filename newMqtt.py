@@ -3,9 +3,10 @@ import utime
 from umqtt.simple import MQTTClient
 
 class Network(): 
-	def __init__(self, ip_address, ids): 
+	def __init__(self, ip_address, ids, timeout): 
 		self.__ip_address = ip_address
 		self.__network_id = ids
+		self.__timeout = timeout
 		self.__secure_connection = False
 
 	def sub_cb(self, topic, msg):
@@ -22,7 +23,7 @@ class Network():
 		sta_if =network.WLAN(network.STA_IF)
 		sta_if.active(True)
 		sta_if.connect('EEERover', 'exhibition')
-		while(utime.time() - u < 60 and not sta_if.isconnected()): #block until the we are connected to the internet
+		while(utime.time() - u < self.__timeout and not sta_if.isconnected()): #block until the we are connected to the internet
 			pass
 		if sta_if.isconnected(): 
 			self.__client = MQTTClient(self.__network_id, self.__ip_address)
