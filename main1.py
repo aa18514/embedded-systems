@@ -77,9 +77,10 @@ while True:
 				utime.sleep_ms(1500)
 
 			magAvg = magnitudeSum/3
-			time = CLK.get_time()			
+			
 
 			if(oldMag is not 0):
+				time = CLK.get_time()
 				if (turnedOff == True and magAvg - oldMag > 60):
 					turnedOff = False
 					net.publish("Device turned on")
@@ -88,8 +89,7 @@ while True:
 					turnedOff = True
 					net.publish("Device turned off")
 					net.publish(time)
-			oldMag = midMag2
-			midMag2 = magAvg
+			oldMag = magAvg
 			
 			outputstream = "{}".format("magAvg: " + str(magAvg) + " milli gauss")
 			print(outputstream)
