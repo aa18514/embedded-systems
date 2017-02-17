@@ -26,7 +26,7 @@ class i2c():
 		self.__x = struct.unpack('>h', self.__data[0:2])[0]
 		self.__y = struct.unpack('>h', self.__data[2:4])[0]
 		self.__z = struct.unpack('>h', self.__data[4:6])[0]
-		self.__magMilliGauss = (((self.__x)**2 + (self.__z)**2 + (self.__y)**2)**0.5)*0.92  #for gain = 1
+		self.__magMilliGauss = (((self.__x)**2 + (self.__z)**2 + (self.__y)**2)**0.5)*0.92  #for gain = 1 
 
 IC = i2c(5, 4, 50000)
 net = Network('192.168.0.10', 'asdid', 60)
@@ -69,8 +69,6 @@ while True:
 		utime.sleep_ms(6)
 		turnedOff = True
 		oldMag = 0
-		#midMag1 = 0
-		midMag2 = 0
 		while True: 	
 			magnitudeSum = 0 
 			for n in range(0,3):
@@ -91,10 +89,8 @@ while True:
 					net.publish("Device turned off")
 					net.publish(time)
 			oldMag = midMag2
-			#midMag2 = midMag1
 			midMag2 = magAvg
 			
 			outputstream = "{}".format("magAvg: " + str(magAvg) + " milli gauss")
 			print(outputstream)
 			print(str(IC.__x) + " " + str(IC.__z) + " " + str(IC.__y) + "\n" )
-			#net.publish(outputstream)
