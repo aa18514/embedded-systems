@@ -29,7 +29,7 @@ class i2c():
 		self.__magMilliGauss = (((self.__x)**2 + (self.__z)**2 + (self.__y)**2)**0.5)*0.92  #for gain = 1
 
 IC = i2c(5, 4, 50000)
-net = Network('192.168.0.10', 'asdid')
+net = Network('192.168.0.10', 'asdid', 60)
 net.init_wlan_and_client()	
 net.recieve_message(b"esys/time")
 CLK = Clock(json.loads(net.__msg)['date'])
