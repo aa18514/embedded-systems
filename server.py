@@ -29,7 +29,7 @@ class magnetic_flux(Thread):
 			elif("on" in json_formatted_msg): 
 				logging.info("device turned on" + json_formatted_msg[3:])
 			elif("off" in json_formatted_msg):
-				logging.info("device turned off" + json_formatted_msg[3:])
+				logging.info("device turned off" + json_formatted_msg[4:])
 
 if __name__ == "__main__":
 	"""detects if the device is functioning correctly
