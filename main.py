@@ -40,7 +40,7 @@ net = Network('192.168.0.10', 'asdid', 60)		#connect to network
 net.init_wlan_and_client()	
 net.recieve_message(b"esys/time")				#wait for time
 CLK = Clock(json.loads(net.__msg)['date'])		
-net.publish_status("device turned on")
+net.publish_status("Sensor turned on")
 
 testStatus = IC.test_mode()		# test if sensor working properly
 time = CLK.get_time()
