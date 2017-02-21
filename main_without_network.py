@@ -56,7 +56,7 @@ class i2c():
 
 
 	def start_recieving_data(self):
-		while True:	#should change this later
+		while True:	
 			self.__data = self.__ic.readfrom_mem(self.__slave_address, 3, 6) 
 			self.update_x(self.__data[0:2])
 			self.update_y(self.__data[2:4])

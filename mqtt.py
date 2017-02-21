@@ -1,5 +1,6 @@
 import network
 import utime
+import ujson as json
 from umqtt.simple import MQTTClient
 
 class Network(): 
@@ -32,12 +33,16 @@ class Network():
 		else: 
 			print("unable to connect to the wireless network")
 
-	def publish(self, message):
+	def publish_status(self, message):
 		if self.__secure_connection == True: 
-			self.__client.publish('esys/asd/', message)
+			self.__client.publish('esys/SenSa/status', json.dumps(message))
 
 	def recieve_message(self, topic): 
-		self.__client.set_callback(self.sub_cb) 
+		self.__client.set_callback(self.sub_cb)
 		self.__client.subscribe(topic)
-		self.__client.wait_msg() #blocking call 
-		self.__client.check_msg()
+		self.__client.wait_msg() 
+		self.__client.check_msg() 
+
+	def publish_reading(self,message):
+		if self.__secure_connection == True: 
+			self.__client.publish('esys/SenSa/reading', json.dumps(message))

@@ -10,52 +10,46 @@ from threading import Thread
 class magnetic_flux(Thread): 
 	def __init__(self, mqttc):
 		super(magnetic_flux, self).__init__()
-		self.__count = 0 
 		self.__mqttc = mqttc
 		self.__turned_on = False
-		self.__publish_id = 'esys/unnamed1/'
-		
+
 	def run(self): 
-		while True:
-			if(self.__turned_on == True):
-				key = ord(getch()) #wait for a key press 
-				if key == 13 or (key == 116 and self.__count == 0): #if key press is enter
-					self.__mqttc.publish(self.__publish_id, str(key))		
-				else: 
-					logging.warning('entered incorrect key')
+		self.__mqttc.on_message = self.recieve_payload 
+		self.__mqttc.loop_forever()
 
 	def recieve_payload(self, topic, userdata, msg):  
-		self.__turned_on = True
-		print(msg.payload)
-		if(msg.payload == "Device turned on"):
-			self.__count += 1
-		if(msg.payload == "Device turned off"):
-			self.__count -= 1
-		logging.info('device turned on: %s' % str(self.__count))
+		json_formatted_msg = msg.payload.decode("utf-8")
+		print(json_formatted_msg)
+		if("device turned on" in json_formatted_msg): 
+			self.__turned_on = True 
+		elif(self.__turned_on is True):
+			if( "Sensor" in json_formatted_msg): 
+				logging.warning(json_formatted_msg)
+			else: 
+				logging.info(json_formatted_msg)
 
 
 if __name__ == "__main__":
-	desc = ("utiltiy to detect active number of devices"
-	"currently there are two modes, the user should press"
-	"the character T if he wants to enter the test mode"
-	"and the Enter key if he wants to enter into continious" 
-	"mode test mode can be performed multiple times only"
-	 "at device start-up")
+	desc = ("detects if the device is functioning correctly,\n"
+	"and stores the when each device was turned on and off\n"
+	"along with the timestamp\n")
 	parser = argparse.ArgumentParser(formatter_class = argparse.RawDescriptionHelpFormatter, description = desc)
 	parser.add_argument('-v', '--verbose', action='count', help = "varying output verbosity")
 	args = parser.parse_args()
+	loglevel = logging.WARNING
 	if args.verbose == None: 
 		loglevel = logging.WARNING
-	elif args.verbose == 1:
-		loglevel = logging.INFO 
 	else:
-		loglevel = logging.DEBUG 
-	logging.basicConfig(filename = 'device.log',  format = '%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', filemode = 'w', level=loglevel)
-	mqttc = mqtt.Client()
-	mqttc.connect('192.168.0.10', 1883, 60) 
-	mqttc.subscribe('esys/asd/')
-	mf = magnetic_flux(mqttc)
-	mf.start()
-	mqttc.on_message = mf.sub_cb 
-	mqttc.loop_forever() 
-	mf.join()
+		loglevel = logging.INFO 
+	logging.basicConfig(filename = 'device.log',  format = '%(message)s', filemode = 'w', level=loglevel)
+	channels = [mqtt.Client(), mqtt.Client()]
+	channels[0].connect('192.168.0.10', 1883, 60) 
+	channels[0].subscribe('esys/SenSa/status')
+	channels[1].connect('192.168.0.10', 1883, 60)
+	channels[1].subscribe('esys/SenSa/reading')
+	mf_1 = magnetic_flux(channels[0])
+	mf_2 = magnetic_flux(channels[1])
+	mf_1.start()
+	mf_2.start() 
+	mf_1.join()
+	mf_2.join()
